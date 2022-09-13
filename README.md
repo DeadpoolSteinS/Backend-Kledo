@@ -1,3 +1,18 @@
+## Setup yang diperlukan
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+## Untuk menjalankan testing
+
+```bash
+./vendor/bin/phpunit
+atau
+php artisan test
+```
+
 [![Build Status](https://img.shields.io/github/workflow/status/zircote/swagger-php/build?style=flat-square)](https://github.com/zircote/swagger-php/actions?query=workflow:build)
 [![Total Downloads](https://img.shields.io/packagist/dt/zircote/swagger-php.svg?style=flat-square)](https://packagist.org/packages/zircote/swagger-php)
 [![License](https://img.shields.io/badge/license-Apache2.0-blue.svg?style=flat-square)](LICENSE)
@@ -29,11 +44,6 @@ Programmatically, the method `Generator::setVersion()` can be used to change the
 
 `swagger-php` requires at least PHP 7.2 for annotations and PHP 8.1 for using attributes.
 
-## Installation (with [Composer](https://getcomposer.org))
-
-```bash
-composer require zircote/swagger-php
-```
 
 For cli usage from anywhere install swagger-php globally and make sure to place the `~/.composer/vendor/bin` directory in your PATH so the `openapi` executable can be located by your system.
 
