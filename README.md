@@ -76,12 +76,25 @@ The REST API to the example app is described below.
     - Minimal 2 juta
     - Maksimal 10 juta
 
+<<<<<<< HEAD
+
 ### Body
 
     {
         "name": "Cranel Bell",
         "salary": 5000000
     }
+
+=======
+
+### Body
+
+    {
+        "name": "Cranel Bell",
+        "salary": 5000000
+    }
+
+> > > > > > > d2f4966c0d1748e66eb24dc02857a69f3e199cbf
 
 ### Response
 
@@ -116,6 +129,8 @@ The REST API to the example app is described below.
         "key": "overtime_method",
         "value": 2
     }
+
+<<<<<<< HEAD
 
 ### Response
 
@@ -186,6 +201,80 @@ Contohnya
 http://127.0.0.1:8000/api/overtime-pays/calculate/2022-09
 
 ### Rule
+
+=======
+
+### Response
+
+    {
+        "code": 200,
+        "message": "Success",
+        "data": [
+            {
+                "key": "overtime_method",
+                "value": 2
+            }
+        ]
+    }
+
+## Create a new Overtime
+
+### Request
+
+`POST /api/overtimes`
+
+### Rule
+
+    employee_id
+    - Integer
+    - Sesuai dengan yang ada di `employees`.`id`
+    date
+    - Date
+    - Tidak boleh ada `date` yang sama pada `employee_id` tersebut
+    time_started
+    - Format HH:mm
+    - Tidak boleh lebih dari `time_ended`
+    time_ended
+    - Format HH:mm
+    - Tidak boleh kurang dari `time_started`
+
+### Body
+
+    {
+        "employee_id": 1,
+        "date": "2022-09-14",
+        "time_started": "10:08",
+        "time_ended": "12:09"
+    }
+
+### Response
+
+    {
+        "code": 200,
+        "message": "Success",
+        "data": [
+            {
+                "id": 7,
+                "employee_id": 1,
+                "date": "2022-09-14",
+                "time_started": "10:08:00",
+                "time_ended": "12:09:00"
+            }
+        ]
+    }
+
+## Get list of Overtimes
+
+### Request
+
+`GET /api/overtime-pays/calculate/{month}`
+
+Contohnya
+http://127.0.0.1:8000/api/overtime-pays/calculate/2022-09
+
+### Rule
+
+> > > > > > > d2f4966c0d1748e66eb24dc02857a69f3e199cbf
 
     month
     - Format YYYY-MM
