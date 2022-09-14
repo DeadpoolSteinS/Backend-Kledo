@@ -1,157 +1,304 @@
-[![Build Status](https://img.shields.io/github/workflow/status/zircote/swagger-php/build?style=flat-square)](https://github.com/zircote/swagger-php/actions?query=workflow:build)
-[![Total Downloads](https://img.shields.io/packagist/dt/zircote/swagger-php.svg?style=flat-square)](https://packagist.org/packages/zircote/swagger-php)
-[![License](https://img.shields.io/badge/license-Apache2.0-blue.svg?style=flat-square)](LICENSE)
+# REST API Overtime App
 
-# swagger-php
-
-Generate interactive [OpenAPI](https://www.openapis.org) documentation for your RESTful API using [doctrine annotations](https://www.doctrine-project.org/projects/doctrine-annotations/en/latest/index.html).
-
-For a full list of supported annotations, please have look at the [`OpenApi\Annotations` namespace](src/Annotations) or the [documentation website](https://zircote.github.io/swagger-php/guide/annotations.html).
-
-## Features
-
--   Compatible with the OpenAPI **3.0** and **3.1** specification.
--   Extracts information from code & existing phpdoc annotations.
--   Command-line interface available.
--   [Documentation site](https://zircote.github.io/swagger-php/) with a getting started guide.
--   Exceptional error reporting (with hints, context)
--   As of PHP 8.1 all annotations are also available as PHP attributes
-
-## OpenAPI version support
-
-`swagger-php` allows to generate specs either for **OpenAPI 3.0.0** or **OpenAPI 3.1.0**.
-By default the spec will be in version `3.0.0`. The command line option `--version` may be used to change this
-to `3.1.0`.
-
-Programmatically, the method `Generator::setVersion()` can be used to change the version.
-
-## Requirements
-
-`swagger-php` requires at least PHP 7.2 for annotations and PHP 8.1 for using attributes.
-
-## Installation (with [Composer](https://getcomposer.org))
+## Setup yang diperlukan
 
 ```bash
-composer require zircote/swagger-php
+php artisan migrate
+php artisan db:seed
 ```
 
-For cli usage from anywhere install swagger-php globally and make sure to place the `~/.composer/vendor/bin` directory in your PATH so the `openapi` executable can be located by your system.
+## Untuk menjalankan testing
 
 ```bash
-composer global require zircote/swagger-php
+./vendor/bin/phpunit
+atau
+php artisan test
 ```
 
-## Usage
+# REST API
 
-Add annotations to your php files.
+The REST API to the example app is described below.
 
-```php
-/**
- * @OA\Info(title="My First API", version="0.1")
- */
+## Get list of Employees
 
-/**
- * @OA\Get(
- *     path="/api/resource.json",
- *     @OA\Response(response="200", description="An example resource")
- * )
- */
-```
+### Request
 
-Visit the [Documentation website](https://zircote.github.io/swagger-php/) for the [Getting started guide](https://zircote.github.io/swagger-php/Getting-started.html) or look at the [Examples directory](Examples/) for more examples.
+`GET /api/employees`
 
-### Usage from php
+### Response
 
-Generate always-up-to-date documentation.
+    {
+        "code": 200,
+        "message": "Success",
+        "data": [
+            {
+                "id": 1,
+                "name": "Novaldi Sandi",
+                "salary": 2000000
+            },
+            {
+                "id": 2,
+                "name": "Kazuto Kirigaya",
+                "salary": 2500000
+            },
+            {
+                "id": 3,
+                "name": "Hikigaya Hachiman",
+                "salary": 3000000
+            },
+            {
+                "id": 4,
+                "name": "Sakuta Azusagawa",
+                "salary": 4000000
+            },
+            {
+                "id": 5,
+                "name": "Novaldi Sandi Ago",
+                "salary": 2500000
+            }
+        ]
+    }
 
-```php
-<?php
-require("vendor/autoload.php");
-$openapi = \OpenApi\Generator::scan(['/path/to/project']);
-header('Content-Type: application/x-yaml');
-echo $openapi->toYaml();
-```
+## Create a new Employee
 
-Documentation of how to use the `Generator` class can be found in the [Generator reference](https://zircote.github.io/swagger-php/reference/generator).
+### Request
 
-### Usage from the Command Line Interface
+`POST /api/employees`
 
-The `openapi` command line interface can be used to generate the documentation to a static yaml/json file.
+### Rule
 
-```bash
-./vendor/bin/openapi --help
-```
+    name
+    - String
+    - Minimal 2 karakter
+    - Harus unik
+    salary
+    - Integer
+    - Minimal 2 juta
+    - Maksimal 10 juta
 
-Starting with version 4 the default analyser used on the command line is the new `ReflectionAnalyser`.
+### Body
 
-Using the `--legacy` flag (`-l`) the legacy `TokenAnalyser` can still be used.
+    {
+        "name": "Cranel Bell",
+        "salary": 5000000
+    }
 
-### Usage from the Deserializer
+### Response
 
-Generate the OpenApi annotation object from a json string, which makes it easier to manipulate objects programmatically.
+    {
+        "code": 200,
+        "message": "Success",
+        "data": [
+            {
+                "id": 6,
+                "name": "Cranel Bell",
+                "salary": 5000000
+            }
+        ]
+    }
 
-```php
-<?php
+## Update Setting
 
-use OpenApi\Serializer;
+### Request
 
-$serializer = new Serializer();
-$openapi = $serializer->deserialize($jsonString, 'OpenApi\Annotations\OpenApi');
-echo $openapi->toJson();
-```
+`PATCH /api/settings`
 
-### Usage from [docker](https://docker.com)
+### Rule
 
-Generate the swagger documentation to a static json file.
+    key
+    - Hanya bisa diisi `overtime_method`.
+    value
+    - Hanya bisa diisi oleh nilai dari `references`.`id` dengan kriteria `code` = `overtime_method`.
 
-```
-docker run -v "$PWD":/app -it tico/swagger-php --help
-```
+### Body
 
-## More on OpenApi & Swagger
+    {
+        "key": "overtime_method",
+        "value": 2
+    }
 
--   https://swagger.io
--   https://www.openapis.org
--   [OpenApi Documentation](https://swagger.io/docs/)
--   [OpenApi Specification](http://swagger.io/specification/)
--   [Related projects](docs/related-projects.md)
+### Response
 
-## Contributing
+    {
+        "code": 200,
+        "message": "Success",
+        "data": [
+            {
+                "key": "overtime_method",
+                "value": 2
+            }
+        ]
+    }
 
-Feel free to submit [Github Issues](https://github.com/zircote/swagger-php/issues)
-or pull requests.
+## Create a new Overtime
 
-The documentation website is build from the [docs](docs/) folder with [vitepress](https://vitepress.vuejs.org).
+### Request
 
-Make sure pull requests pass [PHPUnit](https://phpunit.de/)
-and [PHP-CS-Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer) (PSR-2) tests.
+`POST /api/overtimes`
 
-### To run both unit tests and linting execute:
+### Rule
 
-```bash
-composer test
-```
+    employee_id
+    - Integer
+    - Sesuai dengan yang ada di `employees`.`id`
+    date
+    - Date
+    - Tidak boleh ada `date` yang sama pada `employee_id` tersebut
+    time_started
+    - Format HH:mm
+    - Tidak boleh lebih dari `time_ended`
+    time_ended
+    - Format HH:mm
+    - Tidak boleh kurang dari `time_started`
 
-### Running unit tests only:
+### Body
 
-```bash
-./bin/phpunit
-```
+    {
+        "employee_id": 1,
+        "date": "2022-09-14",
+        "time_started": "10:08",
+        "time_ended": "12:09"
+    }
 
-### Regenerate annotation/attribute reference markup docs
+### Response
 
-```bash
-composer docs:refgen
-```
+    {
+        "code": 200,
+        "message": "Success",
+        "data": [
+            {
+                "id": 7,
+                "employee_id": 1,
+                "date": "2022-09-14",
+                "time_started": "10:08:00",
+                "time_ended": "12:09:00"
+            }
+        ]
+    }
 
-### Running linting only:
+## Get list of Overtimes
 
-```bash
-composer lint
-```
+### Request
 
-### To make `php-cs-fixer` fix linting errors:
+`GET /api/overtime-pays/calculate/{month}`
 
-```bash
-composer cs
-```
+Contohnya
+http://127.0.0.1:8000/api/overtime-pays/calculate/2022-09
+
+### Rule
+
+    month
+    - Format YYYY-MM
+
+### Response
+
+    {
+        "code": 200,
+        "message": "Success",
+        "data": [
+            {
+                "id": 1,
+                "name": "Novaldi Sandi",
+                "salary": 2000000,
+                "overtimes": [
+                    {
+                        "id": 1,
+                        "date": "2022-09-13",
+                        "time_started": "10:00:00",
+                        "time_ended": "12:00:00",
+                        "overtime_duration": 2
+                    },
+                    {
+                        "id": 3,
+                        "date": "2022-09-13",
+                        "time_started": "13:00:00",
+                        "time_ended": "15:30:00",
+                        "overtime_duration": 2
+                    },
+                    {
+                        "id": 5,
+                        "date": "2022-09-13",
+                        "time_started": "10:08:00",
+                        "time_ended": "12:09:00",
+                        "overtime_duration": 2
+                    },
+                    {
+                        "id": 6,
+                        "date": "2022-09-13",
+                        "time_started": "10:08:00",
+                        "time_ended": "12:09:00",
+                        "overtime_duration": 2
+                    },
+                    {
+                        "id": 7,
+                        "date": "2022-09-14",
+                        "time_started": "10:08:00",
+                        "time_ended": "12:09:00",
+                        "overtime_duration": 2
+                    }
+                ],
+                "overtime_duration_total": 10,
+                "amount": 100000
+            },
+            {
+                "id": 2,
+                "name": "Kazuto Kirigaya",
+                "salary": 2500000,
+                "overtimes": [
+                    {
+                        "id": 4,
+                        "date": "2022-09-13",
+                        "time_started": "10:30:00",
+                        "time_ended": "14:00:00",
+                        "overtime_duration": 3
+                    }
+                ],
+                "overtime_duration_total": 3,
+                "amount": 30000
+            },
+            {
+                "id": 3,
+                "name": "Hikigaya Hachiman",
+                "salary": 3000000,
+                "overtimes": [
+                    {
+                        "id": 2,
+                        "date": "2022-09-13",
+                        "time_started": "07:00:00",
+                        "time_ended": "09:45:00",
+                        "overtime_duration": 2
+                    }
+                ],
+                "overtime_duration_total": 2,
+                "amount": 20000
+            },
+            {
+                "id": 4,
+                "name": "Sakuta Azusagawa",
+                "salary": 4000000,
+                "overtimes": [],
+                "overtime_duration_total": 0,
+                "amount": 0
+            },
+            {
+                "id": 5,
+                "name": "Novaldi Sandi Ago",
+                "salary": 2500000,
+                "overtimes": [],
+                "overtime_duration_total": 0,
+                "amount": 0
+            },
+            {
+                "id": 6,
+                "name": "Cranel Bell",
+                "salary": 5000000,
+                "overtimes": [],
+                "overtime_duration_total": 0,
+                "amount": 0
+            }
+        ]
+    }
+
+### Jika Request tidak memenuhi Rule, maka akan mengembalikan Bad Request/Not Found
+
+## Terima Kasih
